@@ -63,10 +63,6 @@ public class BookController {
             boolean errIsbnFlg = false;
             boolean errTitleFlg = false;
 
-
-            
-            BookMst isbnExist=this.bookMstService.selectByIsbn(bookMstDto.getIsbn());
-            BookMst titleExist=this.bookMstService.selectByTitle(bookMstDto.getTitle());
             
             if(title ==null || title.isEmpty()){
                 result.rejectValue("title","error.value","書籍名は必須です。");
@@ -92,18 +88,20 @@ public class BookController {
             }
 
 
-           
-            if(errTitleFlg || errIsbnFlg){
-                throw new Exception("Fiil out the form.");
-            }
+            BookMst isbnExist= this.bookMstService.selectByIsbn(bookMstDto.getIsbn());
 
             if(isbnExist != null){
                 result.rejectValue("isbn","error.value","このISBNは登録済みです。");
                 errIsbnFlg=true;
 
-            }            
+            }    
+            
+            if(errTitleFlg || errIsbnFlg){
+                throw new Exception("Fiil out the form.");
+            }
 
-
+           
+   
             bookMstService.save(bookMstDto);
    
              return "redirect:/book/index";
@@ -115,6 +113,7 @@ public class BookController {
                ra.addFlashAttribute("org.springframework.validation.BindingResult.bookMstDto", result);
                return "redirect:/book/add";
             }
+
         }
 }
 

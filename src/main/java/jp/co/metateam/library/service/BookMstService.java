@@ -30,9 +30,7 @@ public class BookMstService {
     public BookMst selectByIsbn(String isbn) {
         return bookMstRepository.selectByIsbn(isbn);
     }
-    public BookMst selectByTitle(String title) {
-        return bookMstRepository.selectByTitle(title);
-    }
+    
     public List<BookMstDto> findAvailableWithStockCount() {
         List<BookMst> books = this.bookMstRepository.findLimitedBook();
         List<BookMstDto> bookMstDtoList = new ArrayList<>();
