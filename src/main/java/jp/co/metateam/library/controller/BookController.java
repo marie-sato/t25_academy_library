@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
+import jp.co.metateam.library.model.Account;
 import jp.co.metateam.library.model.BookMst;
 import jp.co.metateam.library.model.BookMstDto;
 import jp.co.metateam.library.service.BookMstService;
@@ -51,4 +52,69 @@ public class BookController {
         return "book/add";
     }
     
+    @PostMapping("/book/add")
+    public String register(@Valid @ModelAttribute BookMstDto bookMstDto, BindingResult result, RedirectAttributes ra){
+        
+        
+        try{
+            String title = bookMstDto.getTitle();
+            String isbn = bookMstDto.getIsbn();
+
+            boolean errIsbnFlg = false;
+            boolean errTitleFlg = false;
+
+            
+            if(title ==null || title.isEmpty()){
+                result.rejectValue("title","error.value","書籍名は必須です。");
+                errTitleFlg=true;
+                
+            }
+            if(isbn ==null || isbn.isEmpty()){
+                result.rejectValue("isbn","error.value","ISBNは必須です。");
+                errIsbnFlg=true;
+
+            }
+
+            
+            
+            if(title.length() >255){
+                result.rejectValue("title","error.value","書籍名は255文字以内で入力してください。");
+                errTitleFlg=true;
+                
+            }
+            if(!isbn.matches("\\d{13}")){
+                result.rejectValue("isbn","error.value","ISBNは13桁の半角数字で入力してください。");
+                errIsbnFlg = true;
+            }
+
+
+            BookMst isbnExist= this.bookMstService.selectByIsbn(bookMstDto.getIsbn());
+
+            if(isbnExist != null){
+                result.rejectValue("isbn","error.value","このISBNは登録済みです。");
+                errIsbnFlg=true;
+
+            }    
+            
+            if(errTitleFlg || errIsbnFlg){
+                throw new Exception("Fiil out the form.");
+            }
+
+           
+   
+            bookMstService.save(bookMstDto);
+   
+             return "redirect:/book/index";
+            
+        }catch (Exception e){
+               log.error("登録失敗:"+e.getMessage());
+               log.error(" 書籍情報の保存に失敗しました",e);
+               ra.addFlashAttribute("bookMstDto", bookMstDto);
+               ra.addFlashAttribute("org.springframework.validation.BindingResult.bookMstDto", result);
+               return "redirect:/book/add";
+            }
+
+        }
 }
+
+
