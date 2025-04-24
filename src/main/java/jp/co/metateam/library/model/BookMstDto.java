@@ -13,9 +13,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BookMstDto {
-    
+
+    // @NotEmpty(message = "書籍名は必須です")
+    // @Size(max = 255)
     private Long id; 
     
+    // @NotEmpty(message = "")
+    // @Size(max = 255)
     private String isbn;
 
     private String title;

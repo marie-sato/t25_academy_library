@@ -14,36 +14,50 @@ import io.micrometer.common.util.StringUtils;
 import jp.co.metateam.library.model.BookMst;
 import jp.co.metateam.library.model.BookMstDto;
 import jp.co.metateam.library.repository.BookMstRepository;
+import jp.co.metateam.library.values.AuthorizationTypes;
 
 @Service
 public class BookMstService {
 
     private final BookMstRepository bookMstRepository;
-    
+
     @Autowired
     public BookMstService(BookMstRepository bookMstRepository){
         this.bookMstRepository = bookMstRepository;
     }
-    
+   
+
+    public BookMst selectByIsbn(String isbn) {
+        return bookMstRepository.selectByIsbn(isbn);
+    }
+    public BookMst selectByTitle(String title) {
+        return bookMstRepository.selectByTitle(title);
+    }
     public List<BookMstDto> findAvailableWithStockCount() {
         List<BookMst> books = this.bookMstRepository.findLimitedBook();
-        List<BookMstDto> bookMstDtoList = new ArrayList<BookMstDto>();
+        List<BookMstDto> bookMstDtoList = new ArrayList<>();
 
         // 書籍の在庫数を取得
         // FIXME: 現状は書籍ID毎にDBに問い合わせている。一度のSQLで完了させたい。
-        for (int i = 0; i < books.size(); i++) {
-            BookMst book = books.get(i);
+        for (BookMst book : books) {
             BookMstDto bookMstDto = new BookMstDto();
             bookMstDto.setId(book.getId());
             bookMstDto.setIsbn(book.getIsbn());
             bookMstDto.setTitle(book.getTitle());
             bookMstDtoList.add(bookMstDto);
         }
-
+     
         return bookMstDtoList;
     }
-    
+
+
+    @Transactional
+    public void save(BookMstDto bookMstDto){
+       
+           BookMst bookMst = new BookMst();
+           bookMst.setIsbn(bookMstDto.getIsbn());
+           bookMst.setTitle(bookMstDto.getTitle());
+
+            this.bookMstRepository.save(bookMst);
+    }
 }
-
-
-
