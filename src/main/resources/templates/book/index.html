@@ -11,7 +11,23 @@
         <div class="main_contents">
             <div th:replace="~{common :: header}"></div>
             <div class="inner_contens">
-                <div class="page_title">書籍一覧</div>
+            <div class="page_title">書籍一覧</div>
+            <form th:action="@{/book/add}" method="get">
+                <button type="submit" style="background-coler:
+                  rgb(73, 100, 75); color: black;padding:10px 20px; font-size:14px; margin-bottom: 10px;">書籍登録</button>
+            </form>                
+                <table class="books_table" style="margin:0 auto;width:60%;font-size:8px;border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="width:60%;">書籍名</th>
+                            <th style="width:40%;">ISBN</th>
+                        </tr>
+                    </thead>
+                    <today>
+                        <tr th:each="book : ${bookMstList}">
+                            <td th:text="${book.title}">書籍名</td>
+                            <td th:text="${book.isbn}">ISBN</td>
+                        </tr>
             </div>
         </div>
     </div>
